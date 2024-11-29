@@ -670,6 +670,29 @@ input[type="submit"]:active {
   color: #52d794;
 }
 
+
+/* custom toast  */
+/* #custom-toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  display: none;
+  z-index: 1000;
+}
+#custom-toast.success {
+  background-color: #4caf50;
+}
+#custom-toast.error {
+  background-color: #f44336;
+} */
+
+
 /* userlist related responsive styles */
 @media only screen and (max-width: 1000px) {
   .manageUser-container {

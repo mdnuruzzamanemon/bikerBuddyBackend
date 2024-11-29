@@ -12,6 +12,11 @@
   <link rel="stylesheet" href="/css/toastify.css" />
   <link rel="stylesheet" href="/css/style.css" />
   <script src="./js/toastify.js"></script>
+
+  <!-- cdns -->
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
 </head>
 
 <body>
@@ -28,10 +33,11 @@
       <h1>Login - Chat Application</h1>
     </div>
     <div id="login-form">
-      <form method="post" action="/signup">
+      <form method="post" action="/signup" enctype="multipart/form-data">
         <input type="text" name="username" placeholder="Enter your username" required />
         <input type="email" name="email" placeholder="Enter your email" required />
         <input type="password" name="password" placeholder="Enter your password" required />
+        <input type="file" name="avatar" />
         <input type="submit" value="Sign Up" />
       </form>
       <p class="loginRedirect">
@@ -39,6 +45,13 @@
       </p>
     </div>
   </div>
+
+   <!-- Toast Container -->
+   <!-- <div id="custom-toast"></div> -->
+
+
+   <!-- <script src="/js/customToast.js"></script> -->
+  <script src="toast-handler.js"></script>
 </body>
 
 </html>
