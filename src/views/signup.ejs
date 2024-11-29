@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="author" content="Sumit Saha" />
+  <meta name="owner" content="learnwithsumit.com" />
+  <title>Login</title>
+  <link rel="shortcut icon" href="/images/favicon.png" />
+  <link rel="stylesheet" href="/css/toastify.css" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <script src="./js/toastify.js"></script>
+</head>
+
+<body>
+  <div class="menu">
+    <div class="menu-item"><a href="/inbox">Inbox</a></div>
+    <div class="menu-item"><a href="/users">Users</a></div>
+    <div class="menu-item"><a href="/">Login</a></div>
+  </div>
+
+  <div id="login-container">
+    <div id="left-column"></div>
+    <div id="branding">
+      <img src="/images/logo.png" />
+      <h1>Login - Chat Application</h1>
+    </div>
+    <div id="login-form">
+      <form method="post" action="/signup">
+        <input type="text" name="username" placeholder="Enter your username" required />
+        <input type="email" name="email" placeholder="Enter your email" required />
+        <input type="password" name="password" placeholder="Enter your password" required />
+        <input type="submit" value="Sign Up" />
+      </form>
+      <p class="loginRedirect">
+        Already have an account? <a href="/">Login</a>
+      </p>
+    </div>
+  </div>
+</body>
+
+</html>
