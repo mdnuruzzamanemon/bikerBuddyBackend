@@ -1,6 +1,6 @@
 const express = require('express');
 const { validateSignup } = require('../middleware/validateSignup');
-const { signup } = require('../controllers/authController');
+const { signup, verifyOtp } = require('../controllers/authController');
 const upload = require('../middleware/uploadAvatar');
 
 const router = express.Router();
@@ -13,5 +13,7 @@ router.post('/signup', (req, res, next) => {
     next();
   });
 }, validateSignup, signup);
+
+router.post('/verify-otp', verifyOtp);
 
 module.exports = router;

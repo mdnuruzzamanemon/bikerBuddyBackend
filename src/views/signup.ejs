@@ -33,24 +33,105 @@
       <h1>Login - Chat Application</h1>
     </div>
     <div id="login-form">
-      <form method="post" action="/signup" enctype="multipart/form-data">
+      <form id="signupForm" method="post" action="/signup" enctype="multipart/form-data">
         <input type="text" name="username" placeholder="Enter your username" required />
         <input type="email" name="email" placeholder="Enter your email" required />
         <input type="password" name="password" placeholder="Enter your password" required />
         <input type="file" name="avatar" />
         <input type="submit" value="Sign Up" />
       </form>
+      <!-- OTP Verification Form -->
+    <div id="otp-form" style="display: none;">
+      <form method="post" action="/verify-otp" id="otpForm">
+        <!-- <input type="email" name="email" placeholder="Enter your email" required /> -->
+        <input type="text" name="otp" placeholder="Enter OTP" required />
+        <input type="submit" value="Verify OTP" />
+      </form>
+    </div>
       <p class="loginRedirect">
         Already have an account? <a href="/">Login</a>
       </p>
     </div>
+
+
+    
+
+
   </div>
 
-   <!-- Toast Container -->
-   <!-- <div id="custom-toast"></div> -->
+  <!-- Toast Container -->
+  <!-- <div id="custom-toast"></div> -->
 
 
-   <!-- <script src="/js/customToast.js"></script> -->
+  <!-- <script src="/js/customToast.js"></script> -->
+  <script>
+    const signupForm = document.getElementById('signupForm');
+    const otpFormBox = document.getElementById('otp-form');
+    const otpForm = document.getElementById('otpForm');
+    let signupEmail = ""; // Variable to store the email from signup form
+
+    // Handle the signup form submission
+    signupForm.addEventListener('submit', (e) => {
+      e.preventDefault(); // Prevent default form submission
+      const formData = new FormData(signupForm);
+
+      fetch('/signup', {
+        method: 'POST',
+        body: formData,
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.message) {
+            console.log('Signup successful:', data.message);
+            alert(data.message); // Notify the user
+            signupEmail = formData.get('email'); // Store the email from signup form
+            signupForm.style.display = 'none'; // Hide the signup form
+            otpFormBox.style.display = 'block'; // Show the OTP form
+          } else {
+            console.log('Error during signup:', data.error);
+            alert(data.error || 'Signup failed');
+          }
+        })
+        .catch((error) => {
+          console.error('Signup error:', error);
+        });
+    });
+
+    // Handle the OTP verification form submission
+    otpForm.addEventListener('submit', (e) => {
+      e.preventDefault(); 
+      const formData = new FormData(otpForm);
+      const otpData = {
+        email: signupEmail, // Use the stored email from signup form
+        otp: formData.get('otp'), // Get the OTP value
+      };
+
+      console.log('OTP data to be sent:', otpData); // Debugging: log OTP data
+
+      fetch('/verify-otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(otpData), // Send JSON data
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log('OTP verification response:', data); // Debugging: log server response
+
+          if (data.message) {
+            alert(data.message);
+            window.location.href = '/'; // Redirect to index page on success
+          } else {
+            alert(data.error || 'OTP verification failed');
+          }
+        })
+        .catch((error) => {
+          console.error('OTP verification error:', error);
+        });
+    });
+  </script>
+  
   <script src="toast-handler.js"></script>
 </body>
 
