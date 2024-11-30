@@ -39,14 +39,24 @@ app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 
 // Routes
-app.get('/', (req, res) => {
-  res.render('index', { title: 'Welcome to Biker Buddy' }); // Pass variables if needed
-});
+// app.get('/', (req, res) => {
+//   const token = req.cookies[process.env.COOKIE_NAME];
+//   if (token) {
+//     try {
+//       jwt.verify(token, process.env.JWT_SECRET);
+//       return res.redirect('/inbox');
+//     } catch (err) {
+//       console.error('Invalid token:', err);
+//     }
+//   }
+//   res.render('index', { title: 'Welcome to Biker Buddy' });
+// });
 
 
-app.get('/signup', (req, res) => {
-  res.render('signup', { title: 'Sign Up - Biker Buddy' });
-});
+
+// app.get('/signup', (req, res) => {
+//   res.render('signup', { title: 'Sign Up - Biker Buddy' });
+// });
 
 app.use('/', authRoutes);
 
