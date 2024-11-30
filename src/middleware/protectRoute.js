@@ -14,7 +14,12 @@ exports.protectRoute = (req, res, next) => {
   try {
     // Verify the token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // Attach the decoded user info to the request object
+    // Only include non-sensitive user data
+    req.user = {
+      username: decoded.username,
+      email: decoded.email, // Include email if stored in token
+      avatar: decoded.avatar || 'default-avatar.png', // Placeholder avatar if not available
+    };
     next(); // Proceed to the next middleware or route handler
   } catch (err) {
     console.error('Invalid token:', err.message);
