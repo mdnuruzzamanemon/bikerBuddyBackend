@@ -7,6 +7,10 @@
     <meta name="author" content="Sumit Saha" />
     <meta name="owner" content="learnwithsumit.com" />
     <title>Inbox</title>
+
+    <!-- FontAwesome 6 CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
     <link rel="shortcut icon" href="/images/favicon.png" />
     <!-- <link rel="stylesheet" href="./stylesheets/toastify.css" /> -->
     <link rel="stylesheet" href="/css/style.css" />
@@ -20,8 +24,18 @@
     </div>
     <div id="chat-container">
       <div id="search-container">
-        <input type="text" placeholder="Search" />
+        <input type="text" placeholder="Search" id="search-input"/>
+        <div class="searchResults" id="search-results" style="display: none;">
+          <!-- search result sample user list -->
+          <!-- <div class="conversation searchResultUser" >
+            <img src="./images/user1.png" alt="Sumit" />
+            <div class="title-text">User Name</div>
+            <di class="created-date messageBtn"> <i class="fa-solid fa-message"></i> </di>
+            <div class="conversation-message">No message</div>
+          </div> -->
+        </div>
       </div>
+
       <div id="conversation-list">
         <div class="conversation active">
           <img src="./images/user1.png" alt="Sumit" />
@@ -79,5 +93,52 @@
         </div>
       </div>
     </div>
+
+    <script>
+      const searchInput = document.getElementById('search-input');
+      const searchResults = document.getElementById('search-results');
+    
+      searchInput.addEventListener('input', async (event) => {
+        const query = event.target.value.trim();
+
+    
+        if (query.length === 0) {
+          searchResults.style.display = 'none';
+          searchResults.innerHTML = '';
+          return;
+        }
+    
+        try {
+          const response = await fetch(`/search?q=${encodeURIComponent(query)}`);
+          const users = await response.json();
+    
+          // Clear previous results
+          searchResults.innerHTML = '';
+          searchResults.style.display = users.length ? 'block' : 'none';
+
+          searchResults.innerHTML = users.length ? '<h3>Search results..</h3>': '';
+    
+          // Render each user in the search results
+          users.forEach((user) => {
+            const userElement = document.createElement('div');
+            userElement.classList.add('conversation', 'searchResultUser');
+    
+            userElement.innerHTML = `
+              <img src="${user.avatar || '/images/user1.png'}" alt="${user.username}" />
+              <div class="title-text">${user.username}</div>
+              <div class="created-date messageBtn">
+                <i class="fa-solid fa-message"></i>
+              </div>
+              <div class="conversation-message">${user.email}</div>
+            `;
+    
+            searchResults.appendChild(userElement);
+          });
+        } catch (error) {
+          console.error('Search error:', error);
+        }
+      });
+    </script>
+    
   </body>
 </html>

@@ -5,8 +5,13 @@ const authRoutes = require('./routes/auth');
 const mongoose = require('mongoose');
 require('dotenv').config();
 require('./config');
+// const http = require('http');
+// const socketIO = require('socket.io');
+// const Conversation = require('./models/conversation');
 
 const app = express();
+// const server = http.createServer(app);
+// const io = socketIO(server);
 
 // Middleware
 app.use(cookieParser());
@@ -37,6 +42,53 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
+// Socket.IO connection handling
+// const connectedUsers = new Map();
+
+// io.on('connection', (socket) => {
+//   socket.on('user_connected', (userId) => {
+//     connectedUsers.set(userId, socket.id);
+//   });
+
+//   socket.on('send_message', async (data) => {
+//     try {
+//       const conversation = await Conversation.findById(data.conversationId);
+//       if (!conversation) return;
+
+//       const newMessage = {
+//         sender: data.senderId,
+//         content: data.content,
+//         timestamp: new Date()
+//       };
+
+//       conversation.messages.push(newMessage);
+//       conversation.lastMessage = new Date();
+//       await conversation.save();
+
+//       // Send to all participants
+//       conversation.participants.forEach((participantId) => {
+//         const socketId = connectedUsers.get(participantId.toString());
+//         if (socketId) {
+//           io.to(socketId).emit('receive_message', {
+//             conversationId: conversation._id,
+//             message: newMessage
+//           });
+//         }
+//       });
+//     } catch (error) {
+//       console.error('Message sending error:', error);
+//     }
+//   });
+
+//   socket.on('disconnect', () => {
+//     for (const [userId, socketId] of connectedUsers.entries()) {
+//       if (socketId === socket.id) {
+//         connectedUsers.delete(userId);
+//         break;
+//       }
+//     }
+//   });
+// });
 
 // Routes
 // app.get('/', (req, res) => {

@@ -4,6 +4,7 @@ const { signup, verifyOtp } = require('../controllers/authController');
 const { login, logout } = require('../controllers/loginController');
 const { protectRoute, redirectIfAuthenticated } = require('../middleware/protectRoute');
 const upload = require('../middleware/uploadAvatar');
+const { searchUsers } = require('../controllers/searchController');
 
 const router = express.Router();
 
@@ -38,5 +39,9 @@ router.get('/logout', logout);
 router.get('/inbox', protectRoute, (req, res) => {
   res.render('inbox', { title: 'Inbox - Biker Buddy', user: req.user });
 });
+
+// Add a search route
+router.get('/search', protectRoute, searchUsers);
+
 
 module.exports = router;
