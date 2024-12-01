@@ -3,6 +3,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const authRoutes = require('./routes/auth');
 const mongoose = require('mongoose');
+const conversationRoutes = require("./routes/conversationRoutes");
 require('dotenv').config();
 require('./config');
 // const http = require('http');
@@ -111,7 +112,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 // });
 
 app.use('/', authRoutes);
-
+app.use("/api/conversations", conversationRoutes);
 
 
 

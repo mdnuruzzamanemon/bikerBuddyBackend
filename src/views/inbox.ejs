@@ -36,7 +36,7 @@
         </div>
       </div>
 
-      <div id="conversation-list">
+      <!-- <div id="conversation-list">
         <div class="conversation active">
           <img src="./images/user1.png" alt="Sumit" />
           <div class="title-text">Sumit Saha</div>
@@ -49,15 +49,43 @@
           <di class="created-date"> Apr 16 </di>
           <div class="conversation-message">This is a message</div>
         </div>
+      </div> -->
+      <div id="conversation-list">
+        <% conversations.forEach(conversation => { %>
+          <div class="conversation <%= activeConversation && activeConversation._id === conversation._id ? 'active' : '' %>">
+            <img src="./images/user<%= conversation.participants[1]._id %>.png" alt="<%= conversation.participants[1].username %>" />
+            <div class="title-text"><%= conversation.participants[1].username %></div>
+            <div class="created-date"><%= conversation.lastModified.toLocaleDateString() %></div>
+            <div class="conversation-message">
+              <%= conversation.messages && conversation.messages.length > 0 
+                  ? conversation.messages[conversation.messages.length - 1].content 
+                  : "No message" 
+              %>
+            </div>
+          </div>
+        <% }) %>
       </div>
+      
+
       <div id="new-message-container">
         <a href="#">+</a>
       </div>
-      <div id="chat-title">
+
+      <!-- <div id="chat-title">
         <span> <%= user.username %> </span>
-        <img src="./images/trash.png" alt="Delete Conversation" />
+        <img src="./images/trash.png" alt="Delete Conversation" class="deleteConversation"/>
+      </div> -->
+      <div id="chat-title">
+        <% if (activeConversation) { %>
+          <span><%= activeConversation.participants[1].username %></span>
+          <img src="./images/trash.png" alt="Delete Conversation" class="deleteConversation" data-id="<%= activeConversation._id %>" />
+        <% } else { %>
+          <span>No conversation selected</span>
+        <% } %>
       </div>
-      <div id="chat-message-list">
+      
+
+      <!-- <div id="chat-message-list">
         <div class="message-row other-message">
           <div class="message-content">
             <img src="./images/user1.png" alt="Sumit" />
@@ -71,7 +99,28 @@
             <div class="message-time">Apr 16</div>
           </div>
         </div>
+      </div> -->
+
+
+      <div id="chat-message-list">
+        <% if (activeConversation && activeConversation.messages.length > 0) { %>
+          <% activeConversation.messages.slice().reverse().forEach(message => { %>
+            <div class="message-row <%= message.sender.toString() === loggedInUser._id.toString() ? 'you-message' : 'other-message' %>">
+              <div class="message-content">
+                <% if (message.sender.toString() !== loggedInUser._id.toString()) { %>
+                  <img src="./images/user<%= message.sender %>.png" alt="<%= message.senderUsername %>" />
+                <% } %>
+                <div class="message-text"><%= message.content %></div>
+                <div class="message-time"><%= new Date(message.sentAt).toLocaleString() %></div>
+              </div>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <div>No messages yet. Start the conversation!</div>
+        <% } %>
       </div>
+      
+
       <div id="chat-form">
         <img src="./images/attachment.png" alt=Add Attachment"" />
         <input type="text" placeholder="Type a message" />
@@ -94,6 +143,8 @@
       </div>
     </div>
 
+
+    <script src="/js/addConversations.js"></script>
     <script>
       const searchInput = document.getElementById('search-input');
       const searchResults = document.getElementById('search-results');
