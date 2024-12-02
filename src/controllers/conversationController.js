@@ -1,44 +1,29 @@
 const Conversation = require("../models/conversation");
-const Message = require("../models/Message");
 
-// Get all conversations for the logged-in user
-exports.getConversations = async (req, res) => {
-  const userId = req.user._id; // Assuming logged-in user is in req.user
-  const conversations = await Conversation.find({ participants: userId })
-    .sort({ lastModified: -1 })
-    .populate("participants", "username") // Populate participant usernames
-    .exec();
-  res.json(conversations);
-};
 
-// Add a new conversation or set active
-exports.addOrActivateConversation = async (req, res) => {
-  const userId = req.user._id;
-  const { participantId } = req.body;
+exports.createOrFetchConversation = async (req, res) => {
 
-  let conversation = await Conversation.findOne({
-    participants: { $all: [userId, participantId] }
-  });
+  try {
+    const currentUserId = req.user._id; // Assuming req.user contains the logged-in user
+    const { participantId } = req.body;
+    // Check if a conversation already exists
+    let conversation = await Conversation.findOne({
+      participants: { $all: [currentUserId, participantId] },
+    }).populate('participants', 'username avatar');
 
-  if (!conversation) {
-    conversation = new Conversation({
-      participants: [userId, participantId]
-    });
-    await conversation.save();
+    if (!conversation) {
+      // Create a new conversation if it doesn't exist
+      conversation = new Conversation({
+        participants: [currentUserId, participantId],
+        lastModified: Date.now(),
+      });
+
+      await conversation.save();
+    }
+
+    res.status(200).json(conversation);
+  } catch (error) {
+    console.error('Error in createOrFetchConversation:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
-
-  conversation.lastModified = new Date();
-  await conversation.save();
-
-  res.json(conversation);
-};
-
-// Delete a conversation
-exports.deleteConversation = async (req, res) => {
-  const { conversationId } = req.params;
-
-  await Conversation.findByIdAndDelete(conversationId);
-  await Message.deleteMany({ conversation: conversationId }); // Cleanup related messages
-
-  res.json({ success: true });
 };

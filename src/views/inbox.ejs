@@ -51,19 +51,28 @@
         </div>
       </div> -->
       <div id="conversation-list">
-        <% conversations.forEach(conversation => { %>
-          <div class="conversation <%= activeConversation && activeConversation._id === conversation._id ? 'active' : '' %>">
-            <img src="./images/user<%= conversation.participants[1]._id %>.png" alt="<%= conversation.participants[1].username %>" />
-            <div class="title-text"><%= conversation.participants[1].username %></div>
-            <div class="created-date"><%= conversation.lastModified.toLocaleDateString() %></div>
-            <div class="conversation-message">
-              <%= conversation.messages && conversation.messages.length > 0 
-                  ? conversation.messages[conversation.messages.length - 1].content 
-                  : "No message" 
-              %>
+        <% if (conversations && conversations.length > 0) { %>
+          <% conversations.forEach(conversation => { %>
+            <% 
+              // Find the other participant (not the current user)
+              const otherParticipant = conversation.participants.find(p => p._id.toString() !== user.id);
+            %>
+            <div class="conversation <%= activeConversation && activeConversation._id === conversation._id ? 'active' : '' %>"
+                 data-conversation-id="<%= conversation._id %>">
+              <img src="<%= otherParticipant.avatar || '/images/user1.png' %>" 
+                   alt="<%= otherParticipant.username %>" />
+              <div class="title-text"><%= otherParticipant.username %></div>
+              <div class="created-date"><%= new Date(conversation.lastModified).toLocaleDateString() %></div>
+              <div class="conversation-message">
+                <%= conversation.lastMessage ? conversation.lastMessage : 'No messages yet' %>
+              </div>
             </div>
+          <% }); %>
+        <% } else { %>
+          <div class="no-conversations">
+            No conversations yet. Start by searching for users!
           </div>
-        <% }) %>
+        <% } %>
       </div>
       
 
@@ -173,6 +182,7 @@
           users.forEach((user) => {
             const userElement = document.createElement('div');
             userElement.classList.add('conversation', 'searchResultUser');
+            userElement.dataset.userId = user._id; // Add user ID for backend identification
     
             userElement.innerHTML = `
               <img src="${user.avatar || '/images/user1.png'}" alt="${user.username}" />

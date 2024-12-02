@@ -753,3 +753,10 @@ input[type="submit"]:active {
   padding: 10px 5px;
   background-color: #11141f;
 }
+
+.no-conversations {
+  padding: 20px;
+  text-align: center;
+  color: #666;
+  font-size: 1.4rem;
+}

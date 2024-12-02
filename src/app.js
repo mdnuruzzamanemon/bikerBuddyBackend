@@ -112,7 +112,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 // });
 
 app.use('/', authRoutes);
-app.use("/api/conversations", conversationRoutes);
+app.use('/', conversationRoutes);
 
 
 

@@ -1,14 +1,8 @@
-const express = require("express");
+const express = require('express');
+const {protectRoute} = require('../middleware/protectRoute');
+const { createOrFetchConversation } = require('../controllers/conversationController');
 const router = express.Router();
-const conversationController = require("../controllers/conversationController");
 
-// Get conversations for logged-in user
-router.get("/", conversationController.getConversations);
-
-// Add or activate a conversation
-router.post("/", conversationController.addOrActivateConversation);
-
-// Delete a conversation
-router.delete("/:conversationId", conversationController.deleteConversation);
+router.post('/conversations', protectRoute, createOrFetchConversation);
 
 module.exports = router;
