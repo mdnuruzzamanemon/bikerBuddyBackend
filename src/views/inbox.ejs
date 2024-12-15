@@ -18,7 +18,7 @@
   </head>
   <body>
     <div class="menu">
-      <div class="menu-item"><a href="/inbox">Inbox</a></div>
+      <div class="menu-item"><a href="/inbox">Inbox: <%= user.username %></a></div>
       <div class="menu-item"><a href="/users">Users</a></div>
       <div class="menu-item"><a href="/logout">LogOut</a></div>
     </div>
@@ -54,47 +54,45 @@
         <% if (conversations && conversations.length > 0) { %>
           <% conversations.forEach(conversation => { %>
             <% 
-              // Find the other participant (not the current user)
-              const otherParticipant = conversation.participants.find(p => p._id.toString() !== user.id);
+              // Determine the other participant's details
+              const otherParticipant = conversation.participants.find(participant => participant._id.toString() !== user.id);
             %>
-            <div class="conversation <%= activeConversation && activeConversation._id === conversation._id ? 'active' : '' %>"
-                 data-conversation-id="<%= conversation._id %>">
-              <img src="<%= otherParticipant.avatar || '/images/user1.png' %>" 
-                   alt="<%= otherParticipant.username %>" />
+            <div class="conversation">
+              <!-- Default avatar if no avatar exists -->
+              <img src="<%= otherParticipant.avatar || '/images/user1.png' %>" alt="<%= otherParticipant.username %>" />
               <div class="title-text"><%= otherParticipant.username %></div>
               <div class="created-date"><%= new Date(conversation.lastModified).toLocaleDateString() %></div>
               <div class="conversation-message">
-                <%= conversation.lastMessage ? conversation.lastMessage : 'No messages yet' %>
+                <%= conversation.messages?.[0]?.content || 'No messages yet' %>
               </div>
             </div>
           <% }); %>
         <% } else { %>
-          <div class="no-conversations">
-            No conversations yet. Start by searching for users!
-          </div>
+          <div>No conversations in the database.</div>
         <% } %>
       </div>
+      
       
 
       <div id="new-message-container">
         <a href="#">+</a>
       </div>
 
-      <!-- <div id="chat-title">
-        <span> <%= user.username %> </span>
-        <img src="./images/trash.png" alt="Delete Conversation" class="deleteConversation"/>
-      </div> -->
       <div id="chat-title">
+        <span> Other participate name </span>
+        <img src="./images/trash.png" alt="Delete Conversation" class="deleteConversation"/>
+      </div>
+      <!-- <div id="chat-title">
         <% if (activeConversation) { %>
           <span><%= activeConversation.participants[1].username %></span>
           <img src="./images/trash.png" alt="Delete Conversation" class="deleteConversation" data-id="<%= activeConversation._id %>" />
         <% } else { %>
           <span>No conversation selected</span>
         <% } %>
-      </div>
+      </div> -->
       
 
-      <!-- <div id="chat-message-list">
+      <div id="chat-message-list">
         <div class="message-row other-message">
           <div class="message-content">
             <img src="./images/user1.png" alt="Sumit" />
@@ -108,10 +106,10 @@
             <div class="message-time">Apr 16</div>
           </div>
         </div>
-      </div> -->
+      </div>
 
 
-      <div id="chat-message-list">
+      <!-- <div id="chat-message-list">
         <% if (activeConversation && activeConversation.messages.length > 0) { %>
           <% activeConversation.messages.slice().reverse().forEach(message => { %>
             <div class="message-row <%= message.sender.toString() === loggedInUser._id.toString() ? 'you-message' : 'other-message' %>">
@@ -127,7 +125,7 @@
         <% } else { %>
           <div>No messages yet. Start the conversation!</div>
         <% } %>
-      </div>
+      </div> -->
       
 
       <div id="chat-form">
@@ -152,6 +150,7 @@
       </div>
     </div>
 
+    
 
     <script src="/js/addConversations.js"></script>
     <script>
@@ -200,6 +199,7 @@
         }
       });
     </script>
+
     
   </body>
 </html>

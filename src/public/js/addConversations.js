@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
 
   const searchResults = document.querySelector('#search-results');
+  const searchInput = document.getElementById('search-input');
 
   // Listen for clicks on search results
   searchResults.addEventListener('click', async (event) => {
@@ -10,7 +11,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Get the user ID from a data attribute
     const selectedUserId = target.dataset.userId;
-    console.log("get clicked to search" + " " + selectedUserId);
     if (selectedUserId) {
       try {
         // Send a POST request to create or fetch the conversation
@@ -20,9 +20,19 @@ document.addEventListener("DOMContentLoaded", () => {
           body: JSON.stringify({ participantId: selectedUserId }),
         });
 
+        // clear the search form
+        location.reload();
+        searchInput.value="";
+        // searchResults.style.display = 'none';
+        searchResults.innerHTML = '';
 
       } catch (error) {
         console.error('Error creating or fetching conversation:', error);
+
+        // clear the search form
+        searchInput.value="";
+        searchResults.style.display = 'none';
+        searchResults.innerHTML = '';
       }
     }
   });

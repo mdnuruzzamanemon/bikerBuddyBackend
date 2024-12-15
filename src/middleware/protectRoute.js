@@ -16,10 +16,17 @@ exports.protectRoute = (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     // Only include non-sensitive user data
     req.user = {
+      id: decoded.id,
       username: decoded.username,
       email: decoded.email, // Include email if stored in token
-      avatar: decoded.avatar || 'default-avatar.png', // Placeholder avatar if not available
+      avatar: decoded.avatar || '/images/user1.png', // Placeholder avatar if not available
     };
+
+    // pass user info to response locals
+    if (res.locals.html) {
+      res.locals.loggedInUser = decoded;
+    }
+    
     next(); // Proceed to the next middleware or route handler
   } catch (err) {
     console.error('Invalid token:', err.message);

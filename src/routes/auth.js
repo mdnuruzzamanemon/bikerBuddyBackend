@@ -6,6 +6,7 @@ const { protectRoute, redirectIfAuthenticated } = require('../middleware/protect
 const upload = require('../middleware/uploadAvatar');
 const { searchUsers } = require('../controllers/searchController');
 const Conversation = require("../models/conversation");
+const {getConversation} = require("../controllers/conversationController");
 
 
 const router = express.Router();
@@ -38,31 +39,8 @@ router.post('/', login);
 router.get('/logout', logout);
 
 // Protected route
-router.get('/inbox', protectRoute, async (req, res) => {
-  try {
-    // Fetch conversations for the current user
-    const conversations = await Conversation.find({
-      participants: req.user.id
-    })
-    .populate('participants', 'username avatar')
-    .sort({ lastModified: -1 });
+router.get('/inbox', protectRoute, getConversation);
 
-    res.render('inbox', { 
-      title: 'Inbox - Biker Buddy', 
-      user: req.user,
-      conversations: conversations,
-      activeConversation: null
-    });
-  } catch (error) {
-    console.error('Error fetching conversations:', error);
-    res.render('inbox', { 
-      title: 'Inbox - Biker Buddy', 
-      user: req.user,
-      conversations: [],
-      activeConversation: null
-    });
-  }
-});
 
 // Add a search route
 router.get('/search', protectRoute, searchUsers);
