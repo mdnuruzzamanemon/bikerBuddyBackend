@@ -1,42 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="author" content="Sumit Saha" />
-    <meta name="owner" content="learnwithsumit.com" />
-    <title>Inbox</title>
 
-    <!-- FontAwesome 6 CDN -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="author" content="Sumit Saha" />
+  <meta name="owner" content="learnwithsumit.com" />
+  <title>Inbox</title>
 
-    <link rel="shortcut icon" href="/images/favicon.png" />
-    <!-- <link rel="stylesheet" href="./stylesheets/toastify.css" /> -->
-    <link rel="stylesheet" href="/css/style.css" />
-    <!-- <script src="./js/toastify.js"></script> -->
-  </head>
-  <body>
-    <div class="menu">
-      <div class="menu-item"><a href="/inbox">Inbox: <%= user.username %></a></div>
-      <div class="menu-item"><a href="/users">Users</a></div>
-      <div class="menu-item"><a href="/logout">LogOut</a></div>
-    </div>
-    <div id="chat-container">
-      <div id="search-container">
-        <input type="text" placeholder="Search" id="search-input"/>
-        <div class="searchResults" id="search-results" style="display: none;">
-          <!-- search result sample user list -->
-          <!-- <div class="conversation searchResultUser" >
+  <!-- FontAwesome 6 CDN -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+  <link rel="shortcut icon" href="/images/favicon.png" />
+  <!-- <link rel="stylesheet" href="./stylesheets/toastify.css" /> -->
+  <link rel="stylesheet" href="/css/style.css" />
+  <!-- <script src="./js/toastify.js"></script> -->
+</head>
+
+<body>
+  <div class="menu">
+    <div class="menu-item"><a href="/inbox">Inbox: <%= user.username %></a></div>
+    <div class="menu-item"><a href="/users">Users</a></div>
+    <div class="menu-item"><a href="/logout">LogOut</a></div>
+  </div>
+  <div id="chat-container">
+    <div id="search-container">
+      <input type="text" placeholder="Search" id="search-input" />
+      <div class="searchResults" id="search-results" style="display: none;">
+        <!-- search result sample user list -->
+        <!-- <div class="conversation searchResultUser" >
             <img src="./images/user1.png" alt="Sumit" />
             <div class="title-text">User Name</div>
             <di class="created-date messageBtn"> <i class="fa-solid fa-message"></i> </di>
             <div class="conversation-message">No message</div>
           </div> -->
-        </div>
       </div>
+    </div>
 
-      <!-- <div id="conversation-list">
+    <!-- <div id="conversation-list">
         <div class="conversation active">
           <img src="./images/user1.png" alt="Sumit" />
           <div class="title-text">Sumit Saha</div>
@@ -50,39 +52,43 @@
           <div class="conversation-message">This is a message</div>
         </div>
       </div> -->
-      <div id="conversation-list">
-        <% if (conversations && conversations.length > 0) { %>
-          <% conversations.forEach(conversation => { %>
-            <% 
-              // Determine the other participant's details
-              const otherParticipant = conversation.participants.find(participant => participant._id.toString() !== user.id);
+    <div id="conversation-list">
+      <% if (conversations && conversations.length> 0) { %>
+        <% conversations.forEach(conversation=> { %>
+          <% // Determine the other participant's details const
+            otherParticipant=conversation.participants.find(participant=> participant._id.toString() !== user.id);
             %>
-            <div class="conversation">
+            <div class="conversation"
+              onclick="getMessages('<%= conversation._id %>', '<%= otherParticipant.username %>')">
               <!-- Default avatar if no avatar exists -->
               <img src="<%= otherParticipant.avatar || '/images/user1.png' %>" alt="<%= otherParticipant.username %>" />
-              <div class="title-text"><%= otherParticipant.username %></div>
-              <div class="created-date"><%= new Date(conversation.lastModified).toLocaleDateString() %></div>
+              <div class="title-text">
+                <%= otherParticipant.username %>
+              </div>
+              <div class="created-date">
+                <%= new Date(conversation.lastModified).toLocaleDateString() %>
+              </div>
               <div class="conversation-message">
                 <%= conversation.messages?.[0]?.content || 'No messages yet' %>
               </div>
             </div>
-          <% }); %>
-        <% } else { %>
-          <div>No conversations in the database.</div>
-        <% } %>
-      </div>
-      
-      
+            <% }); %>
+              <% } else { %>
+                <div class="no-conversations">you have no conversations.</div>
+                <% } %>
+    </div>
 
-      <div id="new-message-container">
-        <a href="#">+</a>
-      </div>
 
-      <div id="chat-title">
-        <span> Other participate name </span>
-        <img src="./images/trash.png" alt="Delete Conversation" class="deleteConversation"/>
-      </div>
-      <!-- <div id="chat-title">
+
+    <div id="new-message-container">
+      <a href="#">+</a>
+    </div>
+
+    <div id="chat-title">
+      <span id="conversation-partner"> Other participate name </span>
+      <img src="./images/trash.png" alt="Delete Conversation" class="deleteConversation" />
+    </div>
+    <!-- <div id="chat-title">
         <% if (activeConversation) { %>
           <span><%= activeConversation.participants[1].username %></span>
           <img src="./images/trash.png" alt="Delete Conversation" class="deleteConversation" data-id="<%= activeConversation._id %>" />
@@ -90,26 +96,14 @@
           <span>No conversation selected</span>
         <% } %>
       </div> -->
-      
-
-      <div id="chat-message-list">
-        <div class="message-row other-message">
-          <div class="message-content">
-            <img src="./images/user1.png" alt="Sumit" />
-            <div class="message-text">Ok then</div>
-            <div class="message-time">Apr 16</div>
-          </div>
-        </div>
-        <div class="message-row you-message">
-          <div class="message-content">
-            <div class="message-text">Lorem ipsum dolor sit amet</div>
-            <div class="message-time">Apr 16</div>
-          </div>
-        </div>
-      </div>
 
 
-      <!-- <div id="chat-message-list">
+    <div id="chat-message-list">
+      <div class="nothing">select a conversation</div>
+    </div>
+
+
+    <!-- <div id="chat-message-list">
         <% if (activeConversation && activeConversation.messages.length > 0) { %>
           <% activeConversation.messages.slice().reverse().forEach(message => { %>
             <div class="message-row <%= message.sender.toString() === loggedInUser._id.toString() ? 'you-message' : 'other-message' %>">
@@ -126,64 +120,67 @@
           <div>No messages yet. Start the conversation!</div>
         <% } %>
       </div> -->
-      
 
-      <div id="chat-form">
-        <img src="./images/attachment.png" alt=Add Attachment"" />
-        <input type="text" placeholder="Type a message" />
+
+    <!-- send message form -->
+    <form id="chat-form" method="post" enctype="multipart/form-data">
+      <label for="attachment"><img src="./images/attachment.png" alt="Add Attachment" /></label>
+      <!-- <input type="file" multiple name="attachment" class="hide" id="attachment" /> -->
+      <input type="text" name="message" placeholder="Type a message" autocomplete="off" />
+    </form>
+  </div>
+
+  <div class="modal-wrapper">
+    <div class="modal">
+      <a href="#" class="modal-close">+</a>
+      <div class="modal-title">
+        <h2>Create New Conversation</h2>
+      </div>
+      <div class="modal-body">
+        <form>
+          <input type="text" placeholder="Name" />
+          <input type="text" placeholder="Username" />
+          <input type="button" value="Submit" />
+        </form>
       </div>
     </div>
+  </div>
 
-    <div class="modal-wrapper">
-      <div class="modal">
-        <a href="#" class="modal-close">+</a>
-        <div class="modal-title">
-          <h2>Create New Conversation</h2>
-        </div>
-        <div class="modal-body">
-          <form>
-            <input type="text" placeholder="Name" />
-            <input type="text" placeholder="Username" />
-            <input type="button" value="Submit" />
-          </form>
-        </div>
-      </div>
-    </div>
 
-    
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.8.1/socket.io.min.js"></script>
+  <script src="/js/addConversations.js"></script>
+  <!-- <script src="/js/messagesUpdate.js"></script> -->
+  <script>
+    const searchInput = document.getElementById('search-input');
+    const searchResults = document.getElementById('search-results');
 
-    <script src="/js/addConversations.js"></script>
-    <script>
-      const searchInput = document.getElementById('search-input');
-      const searchResults = document.getElementById('search-results');
-    
-      searchInput.addEventListener('input', async (event) => {
-        const query = event.target.value.trim();
+    searchInput.addEventListener('input', async (event) => {
+      const query = event.target.value.trim();
 
-    
-        if (query.length === 0) {
-          searchResults.style.display = 'none';
-          searchResults.innerHTML = '';
-          return;
-        }
-    
-        try {
-          const response = await fetch(`/search?q=${encodeURIComponent(query)}`);
-          const users = await response.json();
-    
-          // Clear previous results
-          searchResults.innerHTML = '';
-          searchResults.style.display = users.length ? 'block' : 'none';
 
-          searchResults.innerHTML = users.length ? '<h3>Search results..</h3>': '';
-    
-          // Render each user in the search results
-          users.forEach((user) => {
-            const userElement = document.createElement('div');
-            userElement.classList.add('conversation', 'searchResultUser');
-            userElement.dataset.userId = user._id; // Add user ID for backend identification
-    
-            userElement.innerHTML = `
+      if (query.length === 0) {
+        searchResults.style.display = 'none';
+        searchResults.innerHTML = '';
+        return;
+      }
+
+      try {
+        const response = await fetch(`/search?q=${encodeURIComponent(query)}`);
+        const users = await response.json();
+
+        // Clear previous results
+        searchResults.innerHTML = '';
+        searchResults.style.display = users.length ? 'block' : 'none';
+
+        searchResults.innerHTML = users.length ? '<h3>Search results..</h3>' : '';
+
+        // Render each user in the search results
+        users.forEach((user) => {
+          const userElement = document.createElement('div');
+          userElement.classList.add('conversation', 'searchResultUser');
+          userElement.dataset.userId = user._id; // Add user ID for backend identification
+
+          userElement.innerHTML = `
               <img src="${user.avatar || '/images/user1.png'}" alt="${user.username}" />
               <div class="title-text">${user.username}</div>
               <div class="created-date messageBtn">
@@ -191,15 +188,147 @@
               </div>
               <div class="conversation-message">${user.email}</div>
             `;
-    
-            searchResults.appendChild(userElement);
-          });
-        } catch (error) {
-          console.error('Search error:', error);
-        }
-      });
-    </script>
 
-    
-  </body>
+          searchResults.appendChild(userElement);
+        });
+      } catch (error) {
+        console.error('Search error:', error);
+      }
+    });
+  </script>
+
+
+  <script>
+    const form = document.querySelector('#chat-form');
+    const messageContainer = document.querySelector('#chat-message-list');
+    const chatTitleContainer = document.querySelector('#conversation-partner');
+    const loggedinUserId = '<%= user.id %>';
+    const loggedinUserName = '<%= user.username %>';
+    let otherParticipant = null; // Selected conversation participant object
+    let current_conversation_id; // Selected conversation id
+
+    // Initialize socket connection
+    const socket = io('<%= process.env.APP_URL %>');
+
+    // Handle new/live incoming message from socket
+    socket.on("new_message", (data) => {
+      if (data.message.conversation === current_conversation_id) {
+        const messageClass = data.message.sender._id === loggedinUserId ? 'you-message' : 'other-message';
+        const senderAvatar = data.message.sender.avatar
+          ? `<img src="./uploads/avatars/${data.message.sender.avatar}" alt="${data.message.sender.username}" />`
+          : `<img src="./images/nophoto.png" alt="${data.message.sender.username}" />`;
+
+        let attachments = '<div class="attachments">';
+        if (data.message.attachment) {
+          attachments += `<img src="./uploads/attachments/${data.message.attachment}" />`;
+        }
+        attachments += '</div>';
+
+        const messageHTML = data.message.sender._id === loggedinUserId
+          ? `<div class="message-row ${messageClass}"><div class="message-content">
+              <div class="message-text">${data.message.content}</div>
+              ${attachments}
+              <div class="message-time">${moment(data.message.sentAt).fromNow()}</div>
+          </div></div>`
+          : `<div class="message-row ${messageClass}"><div class="message-content">
+              ${senderAvatar}
+              <div class="message-text">${data.message.content}</div>
+              ${attachments}
+              <div class="message-time">${moment(data.message.sentAt).fromNow()}</div>
+          </div></div>`;
+
+        document.querySelector('#chat-message-list > .message-row:first-child').insertAdjacentHTML('beforeBegin', messageHTML);
+      }
+    });
+
+    // Fetch messages of a conversation
+    async function getMessages(conversation_id, current_conversation_name) {
+
+
+      let response = await fetch(`/inbox/messages/${conversation_id}`);
+      const result = await response.json();
+
+
+      if (!result.errors && result.data) {
+        // form.style.visibility = 'visible';
+
+
+        const { messages, participant } = result.data;
+        otherParticipant = participant;
+        current_conversation_id = conversation_id;
+
+        if (messages) {
+          let allMessages = '';
+          messages.forEach((message) => {
+            const senderAvatar = message.sender.avatar
+              ? `${message.sender.avatar}`
+              : './images/user1.png';
+
+            const messageClass = message.sender._id === loggedinUserId ? 'you-message' : 'other-message';
+            console.log(loggedinUserName);
+
+            const showAvatar = message.sender._id === loggedinUserId ? '' : `<img src="${senderAvatar}" alt="${message.sender.username}" />`;
+
+            // let attachments = '<div class="attachments">';
+            // if (message.attachment) {
+            //   attachments += `<img src="./uploads/attachments/${message.attachment}" />`;
+            // }
+            // attachments += '</div>';
+
+            const messageHTML = `<div class="message-row ${messageClass}"><div class="message-content">
+                      ${showAvatar}
+                      <div class="message-text">${message.content}</div>
+                      
+                      <div class="message-time">${message.sentAt}</div>
+                  </div></div>`;
+
+            allMessages += messageHTML;
+          });
+
+          messageContainer.innerHTML = allMessages;
+        } else {
+          messageContainer.innerHTML = '<div class="message-row">No messages yet.</div>';
+        }
+
+
+        chatTitleContainer.textContent = current_conversation_name;
+      }
+    }
+
+    // Handle message sending
+    form.onsubmit = async function (event) {
+      event.preventDefault();
+
+
+
+      const formData = new FormData(form);
+      formData.append('receiverId', otherParticipant._id);
+      formData.append('conversationId', current_conversation_id);
+
+
+      let response = await fetch("/inbox/message", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json'  // Add this header
+        },
+        body: JSON.stringify({
+          conversationId: current_conversation_id,  // Make sure this exists
+          content: formData.get('message'),  // Get message content from form
+        })
+      });
+
+      const result = await response.json();
+      console.log(result);
+      if (!result.errors) {
+        form.reset();
+      }
+    };
+
+  </script>
+
+
+
+
+</body>
+
 </html>
