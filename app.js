@@ -13,7 +13,9 @@ require('./config');
 
 const app = express();
 const server = http.createServer(app);
-// const io = socketIO(server);
+const { Server } = require("socket.io");
+const io = new Server(server);
+
 
 // Middleware
 app.use(cookieParser());
@@ -46,25 +48,30 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 
-// socket initiation
-const io = require("socket.io")(server);
-
-
 
 
 // Make Socket.IO globally accessible
 global.io = io;
 
-io.on("connection", (socket) => {
-  console.log("A user connected:", socket.id);
+// Socket connection handling
+io.on('connection', (socket) => {
+  console.log('A user connected:', socket.id);
 
-  // Additional socket events can go here
-
-  socket.on("disconnect", () => {
-    console.log("A user disconnected:", socket.id);
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.id);
   });
 });
-// socket end
+
+// io.on("connection", (socket) => {
+//   console.log("A user connected:", socket.id);
+
+//   // Additional socket events can go here
+
+//   socket.on("disconnect", () => {
+//     console.log("A user disconnected:", socket.id);
+//   });
+// });
+// // socket end
 
 app.use('/', authRoutes);
 app.use('/', conversationRoutes);
@@ -75,7 +82,7 @@ app.use('/', conversationRoutes);
 
 const PORT = process.env.PORT;
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
 

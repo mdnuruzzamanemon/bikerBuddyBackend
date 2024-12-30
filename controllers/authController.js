@@ -38,7 +38,7 @@ exports.signup = async (req, res) => {
     if (existingUser) {
       // Remove avatar file if signup fails
       if (req.file) {
-        const avatarPath = path.resolve('src', 'public', 'uploads', 'avatars', req.file.filename);
+        const avatarPath = path.resolve('public', 'uploads', 'avatars', req.file.filename);
         removeAvatarFile(avatarPath);
       }
       return res.status(400).json({ error: 'Username or email already in use' });
@@ -75,7 +75,7 @@ exports.signup = async (req, res) => {
 
     // Remove avatar file in case of server error
     if (req.file) {
-      const avatarPath = path.resolve('src', 'public', 'uploads', 'avatars', req.file.filename);
+      const avatarPath = path.resolve('public', 'uploads', 'avatars', req.file.filename);
       removeAvatarFile(avatarPath);
     }
 

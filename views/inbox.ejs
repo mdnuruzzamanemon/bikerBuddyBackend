@@ -147,7 +147,7 @@
   </div>
 
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.8.1/socket.io.min.js"></script>
+   <script src="/socket.io/socket.io.js"></script>
   <script src="/js/addConversations.js"></script>
   <!-- <script src="/js/messagesUpdate.js"></script> -->
   <script>
@@ -210,13 +210,23 @@
     // Initialize socket connection
     const socket = io('<%= process.env.APP_URL %>');
 
+    socket.on("connect", () => {
+    console.log("Connected to the server");
+  });
+
     // Handle new/live incoming message from socket
     socket.on("new_message", (data) => {
       if (data.message.conversation === current_conversation_id) {
-        const messageClass = data.message.sender._id === loggedinUserId ? 'you-message' : 'other-message';
+
+        console.log("this is the sender:");
+        console.log(data.message.sender.avatar);
+        console.log(data.message.sender.id);
+        console.log(data.message.sender.username);
+
+        const messageClass = data.message.sender.id === loggedinUserId ? 'you-message' : 'other-message';
         const senderAvatar = data.message.sender.avatar
-          ? `<img src="./uploads/avatars/${data.message.sender.avatar}" alt="${data.message.sender.username}" />`
-          : `<img src="./images/nophoto.png" alt="${data.message.sender.username}" />`;
+          ? `<img src="${data.message.sender.avatar}" alt="${data.message.sender.username}" />`
+          : `<img src="./images/user1.png" alt="${data.message.sender.username}" />`;
 
         let attachments = '<div class="attachments">';
         if (data.message.attachment) {
@@ -224,17 +234,17 @@
         }
         attachments += '</div>';
 
-        const messageHTML = data.message.sender._id === loggedinUserId
+        const messageHTML = data.message.sender.id === loggedinUserId
           ? `<div class="message-row ${messageClass}"><div class="message-content">
               <div class="message-text">${data.message.content}</div>
-              ${attachments}
-              <div class="message-time">${moment(data.message.sentAt).fromNow()}</div>
+              
+              <div class="message-time">${data.message.sentAt}</div>
           </div></div>`
           : `<div class="message-row ${messageClass}"><div class="message-content">
               ${senderAvatar}
               <div class="message-text">${data.message.content}</div>
               ${attachments}
-              <div class="message-time">${moment(data.message.sentAt).fromNow()}</div>
+              <div class="message-time">${data.message.sentAt}</div>
           </div></div>`;
 
         document.querySelector('#chat-message-list > .message-row:first-child').insertAdjacentHTML('beforeBegin', messageHTML);
@@ -265,15 +275,11 @@
               : './images/user1.png';
 
             const messageClass = message.sender._id === loggedinUserId ? 'you-message' : 'other-message';
-            console.log(loggedinUserName);
+            
 
             const showAvatar = message.sender._id === loggedinUserId ? '' : `<img src="${senderAvatar}" alt="${message.sender.username}" />`;
 
-            // let attachments = '<div class="attachments">';
-            // if (message.attachment) {
-            //   attachments += `<img src="./uploads/attachments/${message.attachment}" />`;
-            // }
-            // attachments += '</div>';
+           
 
             const messageHTML = `<div class="message-row ${messageClass}"><div class="message-content">
                       ${showAvatar}
