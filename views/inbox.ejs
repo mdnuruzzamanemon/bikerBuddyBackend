@@ -243,7 +243,7 @@
           : `<div class="message-row ${messageClass}"><div class="message-content">
               ${senderAvatar}
               <div class="message-text">${data.message.content}</div>
-              ${attachments}
+              
               <div class="message-time">${data.message.sentAt}</div>
           </div></div>`;
 
@@ -260,14 +260,14 @@
 
 
       if (!result.errors && result.data) {
-        // form.style.visibility = 'visible';
+        form.style.visibility = 'visible';
 
 
         const { messages, participant } = result.data;
         otherParticipant = participant;
         current_conversation_id = conversation_id;
 
-        if (messages) {
+        if (messages.length>0) {
           let allMessages = '';
           messages.forEach((message) => {
             const senderAvatar = message.sender.avatar
@@ -293,12 +293,14 @@
 
           messageContainer.innerHTML = allMessages;
         } else {
-          messageContainer.innerHTML = '<div class="message-row">No messages yet.</div>';
+          
+          messageContainer.innerHTML = '<div class="message-row"></div>';
         }
 
 
         chatTitleContainer.textContent = current_conversation_name;
       }
+      
     }
 
     // Handle message sending
