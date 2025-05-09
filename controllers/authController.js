@@ -60,12 +60,25 @@ exports.signup = async (req, res) => {
     };
 
     // Send OTP to the user's email
+    // const mailOptions = {
+    //   from: process.env.EMAIL_USER,
+    //   to: email,
+    //   subject: 'Your OTP for Signup',
+    //   text: `Your OTP for completing the signup process is: ${otp}. It is valid for 10 minutes.`,
+    // };
     const mailOptions = {
-      from: process.env.EMAIL_USER,
+      from: `"Let's Chat" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: 'Your OTP for Signup',
       text: `Your OTP for completing the signup process is: ${otp}. It is valid for 10 minutes.`,
+      html: `
+        <p>Your OTP for completing the signup process is: 
+          <strong style="color: #2E86C1; font-size: 18px;">${otp}</strong>.
+        </p>
+        <p>It is valid for <strong>10 minutes</strong>.</p>
+      `
     };
+    
 
     await transporter.sendMail(mailOptions);
 
@@ -99,7 +112,7 @@ exports.verifyOtp = async (req, res) => {
     if (currentTime - storedOtp.createdAt > 600000) {
       // Remove avatar file if signup fails due to OTP expiration
       const avatarPath = storedOtp.userData.avatar
-        ? path.resolve('src', 'public', storedOtp.userData.avatar)
+        ? path.resolve( 'public', storedOtp.userData.avatar)
         : null;
       removeAvatarFile(avatarPath);
 

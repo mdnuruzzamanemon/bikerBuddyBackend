@@ -17,6 +17,40 @@
   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
+  <style>
+    /* Loader styles */
+    .loader-container {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .loader {
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid var(--blue);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .error {
+      margin-top: 5px;
+      margin-bottom: 5px;
+    }
+  </style>
 </head>
 
 <body>
@@ -24,6 +58,11 @@
     <div class="menu-item"><a href="/inbox">Inbox</a></div>
     <div class="menu-item"><a href="/users">Users</a></div>
     <div class="menu-item"><a href="/">Login</a></div>
+  </div>
+
+  <!-- Loader element -->
+  <div class="loader-container">
+    <div class="loader"></div>
   </div>
 
   <div id="login-container">
@@ -35,28 +74,28 @@
     <div id="login-form">
       <form id="signupForm" method="post" action="/signup" enctype="multipart/form-data">
         <input type="text" name="username" placeholder="Enter your username" required />
+        <p class="error username-error"></p>
         <input type="email" name="email" placeholder="Enter your email" required />
+        <p class="error email-error"></p>
         <input type="password" name="password" placeholder="Enter your password" required />
+        <p class="error password-error"></p>
         <input type="file" name="avatar" />
+        <p class="error avatar-error"></p>
+        <p class="error general-error"></p>
         <input type="submit" value="Sign Up" />
       </form>
       <!-- OTP Verification Form -->
-    <div id="otp-form" style="display: none;">
-      <form method="post" action="/verify-otp" id="otpForm">
-        <!-- <input type="email" name="email" placeholder="Enter your email" required /> -->
-        <input type="text" name="otp" placeholder="Enter OTP" required />
-        <input type="submit" value="Verify OTP" />
-      </form>
-    </div>
+      <div id="otp-form" style="display: none;">
+        <form method="post" action="/verify-otp" id="otpForm">
+          <input type="text" name="otp" placeholder="Enter OTP" required />
+          <p class="error otp-error"></p>
+          <input type="submit" value="Verify OTP" />
+        </form>
+      </div>
       <p class="loginRedirect">
         Already have an account? <a href="/">Login</a>
       </p>
     </div>
-
-
-    
-
-
   </div>
 
   <!-- Toast Container -->
@@ -68,12 +107,71 @@
     const signupForm = document.getElementById('signupForm');
     const otpFormBox = document.getElementById('otp-form');
     const otpForm = document.getElementById('otpForm');
+    const loader = document.querySelector('.loader-container');
     let signupEmail = ""; // Variable to store the email from signup form
+
+    // Error elements
+    const usernameError = document.querySelector('.username-error');
+    const emailError = document.querySelector('.email-error');
+    const passwordError = document.querySelector('.password-error');
+    const avatarError = document.querySelector('.avatar-error');
+    const generalError = document.querySelector('.general-error');
+    const otpError = document.querySelector('.otp-error');
+
+    // Function to clear errors
+    function clearErrors() {
+      const errors = document.querySelectorAll('.error');
+      errors.forEach(error => {
+        error.textContent = '';
+        error.classList.remove('show');
+      });
+    }
+
+    // Function to show loader
+    function showLoader() {
+      loader.style.display = 'flex';
+    }
+
+    // Function to hide loader
+    function hideLoader() {
+      loader.style.display = 'none';
+    }
 
     // Handle the signup form submission
     signupForm.addEventListener('submit', (e) => {
       e.preventDefault(); // Prevent default form submission
+      clearErrors(); // Clear previous errors
+      
+      // Basic validation
       const formData = new FormData(signupForm);
+      const username = formData.get('username');
+      const email = formData.get('email');
+      const password = formData.get('password');
+      
+      let hasError = false;
+      
+      if (!username) {
+        usernameError.textContent = 'Username is required';
+        usernameError.classList.add('show');
+        hasError = true;
+      }
+      
+      if (!email) {
+        emailError.textContent = 'Email is required';
+        emailError.classList.add('show');
+        hasError = true;
+      }
+      
+      if (!password) {
+        passwordError.textContent = 'Password is required';
+        passwordError.classList.add('show');
+        hasError = true;
+      }
+      
+      if (hasError) return;
+      
+      // Show loader
+      showLoader();
 
       fetch('/signup', {
         method: 'POST',
@@ -81,29 +179,49 @@
       })
         .then((response) => response.json())
         .then((data) => {
+          // Hide loader
+          hideLoader();
+          
           if (data.message) {
             console.log('Signup successful:', data.message);
-            alert(data.message); // Notify the user
             signupEmail = formData.get('email'); // Store the email from signup form
             signupForm.style.display = 'none'; // Hide the signup form
             otpFormBox.style.display = 'block'; // Show the OTP form
-          } else {
+          } else if (data.error) {
             console.log('Error during signup:', data.error);
-            alert(data.error || 'Signup failed');
+            generalError.textContent = data.error;
+            generalError.classList.add('show');
           }
         })
         .catch((error) => {
+          // Hide loader
+          hideLoader();
           console.error('Signup error:', error);
+          generalError.textContent = 'Server error. Please try again later.';
+          generalError.classList.add('show');
         });
     });
 
     // Handle the OTP verification form submission
     otpForm.addEventListener('submit', (e) => {
       e.preventDefault(); 
+      clearErrors();
+      
       const formData = new FormData(otpForm);
+      const otp = formData.get('otp');
+      
+      if (!otp) {
+        otpError.textContent = 'OTP is required';
+        otpError.classList.add('show');
+        return;
+      }
+      
+      // Show loader
+      showLoader();
+      
       const otpData = {
         email: signupEmail, // Use the stored email from signup form
-        otp: formData.get('otp'), // Get the OTP value
+        otp: otp, // Get the OTP value
       };
 
       console.log('OTP data to be sent:', otpData); // Debugging: log OTP data
@@ -117,17 +235,23 @@
       })
         .then((response) => response.json())
         .then((data) => {
+          // Hide loader
+          hideLoader();
           console.log('OTP verification response:', data); // Debugging: log server response
 
           if (data.message) {
-            alert(data.message);
             window.location.href = '/'; // Redirect to index page on success
-          } else {
-            alert(data.error || 'OTP verification failed');
+          } else if (data.error) {
+            otpError.textContent = data.error;
+            otpError.classList.add('show');
           }
         })
         .catch((error) => {
+          // Hide loader
+          hideLoader();
           console.error('OTP verification error:', error);
+          otpError.textContent = 'Server error. Please try again later.';
+          otpError.classList.add('show');
         });
     });
   </script>

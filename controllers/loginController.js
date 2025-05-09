@@ -13,6 +13,11 @@ exports.login = async (req, res) => {
   try {
     const { username, password } = req.body;
 
+    // Validate input
+    if (!username || !password) {
+      return res.status(400).json({ error: 'Username and password are required' });
+    }
+
     // Check if user exists
     const user = await User.findOne({ $or: [{ username }, { email: username }] });
     if (!user) {
@@ -36,9 +41,15 @@ exports.login = async (req, res) => {
       maxAge: COOKIE_EXPIRY,
     });
 
-    // Redirect to inbox
-    // res.status(200).json({ message: 'Login successful. Redirecting...', redirectUrl: '/inbox' });
-    res.redirect('/inbox');
+    // Check if request accepts JSON (from fetch API) or prefers HTML (from form submit)
+    const acceptsJson = req.headers['content-type'] === 'application/json';
+    
+    if (acceptsJson) {
+      return res.status(200).json({ message: 'Login successful', redirectUrl: '/inbox' });
+    } else {
+      // Redirect to inbox for traditional form submission
+      return res.redirect('/inbox');
+    }
   } catch (error) {
     console.error('Error during login:', error);
     res.status(500).json({ error: 'Server error. Please try again later.' });

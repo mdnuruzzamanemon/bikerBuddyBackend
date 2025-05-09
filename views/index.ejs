@@ -26,25 +26,90 @@
         <h1>Login - Chat Application</h1>
       </div>
       <div id="login-form">
-        <form method="post" action="/">
+        <form id="loginForm" method="post" action="/">
           <input
             type="text"
             name="username"
             placeholder="enter mobile or email"
             value=""
           />
-          <p class="error show">Error message here</p>
+          <p class="error username-error"></p>
           <input type="password" name="password" placeholder="enter password" />
+          <p class="error password-error"></p>
+          <p class="error general-error"></p>
           <input type="submit" value="Login" />
         </form>
         <p class="signUpRedirect">Do not have account. <a href="/signup">SignUp</a></p>
       </div>
     </div>
 
-    <!-- Toast Container -->
-  <!-- <div id="custom-toast"></div>
+    <script>
+      const loginForm = document.getElementById('loginForm');
+      const usernameError = document.querySelector('.username-error');
+      const passwordError = document.querySelector('.password-error');
+      const generalError = document.querySelector('.general-error');
 
-
-  <script src="/js/customToast.js"></script> -->
+      loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        // Clear previous errors
+        usernameError.textContent = '';
+        usernameError.classList.remove('show');
+        passwordError.textContent = '';
+        passwordError.classList.remove('show');
+        generalError.textContent = '';
+        generalError.classList.remove('show');
+        
+        const formData = new FormData(loginForm);
+        const username = formData.get('username');
+        const password = formData.get('password');
+        
+        // Basic validation
+        let hasError = false;
+        
+        if (!username) {
+          usernameError.textContent = 'Username or email is required';
+          usernameError.classList.add('show');
+          hasError = true;
+        }
+        
+        if (!password) {
+          passwordError.textContent = 'Password is required';
+          passwordError.classList.add('show');
+          hasError = true;
+        }
+        
+        if (hasError) return;
+        
+        // Submit form data using fetch
+        fetch('/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ username, password }),
+        })
+        .then(response => {
+          if (response.redirected) {
+            window.location.href = response.url;
+            return;
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data && data.error) {
+            generalError.textContent = data.error;
+            generalError.classList.add('show');
+          } else if (data && data.redirectUrl) {
+            // Handle redirect from JSON response
+            window.location.href = data.redirectUrl;
+          }
+        })
+        .catch(error => {
+          generalError.textContent = 'Server error. Please try again later.';
+          generalError.classList.add('show');
+        });
+      });
+    </script>
   </body>
 </html>
