@@ -1,5 +1,5 @@
 const Conversation = require("../models/Conversation");
-const Message = require('../models/message');
+const Message = require('../models/Message');
 
 exports.createOrFetchConversation = async (req, res) => {
   try {
