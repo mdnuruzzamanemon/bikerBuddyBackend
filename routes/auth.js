@@ -5,7 +5,7 @@ const { login, logout } = require('../controllers/loginController');
 const { protectRoute, redirectIfAuthenticated } = require('../middleware/protectRoute');
 const upload = require('../middleware/uploadAvatar');
 const { searchUsers } = require('../controllers/searchController');
-const Conversation = require("../models/conversation");
+const Conversation = require("../models/Conversation");
 const {getConversation} = require("../controllers/conversationController");
 
 

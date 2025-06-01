@@ -1,7 +1,7 @@
 const http = require('http');
 const socketIo = require('socket.io');
 const app = require('./app'); // Your Express app
-const Conversation = require('./models/conversation');
+const Conversation = require('./models/Conversation');
 
 const server = http.createServer(app);
 const io = socketIo(server);
